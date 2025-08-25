@@ -46,7 +46,7 @@ function DriveOptionsFile({ file, startEditing, mode }) {
       if (!response.ok) {
         const errorJson = await response.json().catch(() => ({}));
         console.error("Backend error:", errorJson.error || "Unknown error");
-        toast.dismiss(toastId); 
+        toast.dismiss(toastId);
         return;
       }
 
@@ -65,7 +65,7 @@ function DriveOptionsFile({ file, startEditing, mode }) {
       toast.dismiss(toastId);
     } catch (err) {
       console.error("Download error:", err);
-      toast.dismiss(toastId); 
+      toast.dismiss(toastId);
       toast.error("Download failed");
     }
   };
@@ -79,11 +79,10 @@ function DriveOptionsFile({ file, startEditing, mode }) {
       if (res.data?.file) {
         queryClient.setQueryData(
           ["files", file.folder_id || "root"],
-          (oldFiles = []) => [
-            ...oldFiles,
-            res.data.file, 
-          ]
+          (oldFiles = []) => [...oldFiles, res.data.file]
         );
+
+        queryClient.invalidateQueries(["files", file.folder_id || "root"]);
 
         toast.success("File copied successfully");
       } else {
@@ -113,6 +112,9 @@ function DriveOptionsFile({ file, startEditing, mode }) {
           ...oldTrash,
           deletedFile,
         ]);
+
+        queryClient.invalidateQueries(["files", file.folder_id || "root"]);
+        queryClient.invalidateQueries(["trashFiles"]);
 
         toast.success("File moved to trash");
       } else {

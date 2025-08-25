@@ -56,7 +56,6 @@ function Sidebar({ currentFolder, className = "" }) {
       await queryClient.cancelQueries(["files", parentId || "root"]);
       const prevFiles = queryClient.getQueryData(["files", parentId || "root"]);
 
-      // ✅ Correctly map files
       const newFiles = files.map((file) => ({
         id: Date.now() + Math.random(),
         name: file.name,
@@ -72,7 +71,6 @@ function Sidebar({ currentFolder, className = "" }) {
       return { prevFiles };
     },
     onSuccess: (_, { parentId }) => {
-      // ✅ Refresh only the correct folder
       queryClient.invalidateQueries(["files", parentId || "root"]);
     },
   });
@@ -124,6 +122,7 @@ function Sidebar({ currentFolder, className = "" }) {
   };
 
   const handleDriveUpload = async (files) => {
+    const toastId = toast.loading("Uploading files...");
     const formData = new FormData();
 
     Array.from(files).forEach((file) => formData.append("files", file));
@@ -150,7 +149,7 @@ function Sidebar({ currentFolder, className = "" }) {
         ...old.filter((f) => !f.isUploading),
         ...res.data.uploaded,
       ]);
-      toast.success("Files uploaded successfully");
+      toast.success("Files uploaded successfully", { id: toastId });
     } catch (err) {
       toast.error("Upload failed");
 
@@ -161,10 +160,7 @@ function Sidebar({ currentFolder, className = "" }) {
   };
 
   const handleFolderUpload = async (files, folderId) => {
-    if (!folderId) {
-      toast.error("No folder selected!");
-      return;
-    }
+    const toastId = toast.loading("Uploading files...");
 
     const formData = new FormData();
     Array.from(files).forEach((file) => formData.append("files", file));
@@ -180,7 +176,13 @@ function Sidebar({ currentFolder, className = "" }) {
 
       queryClient.setQueryData(["files", folderId], (old = []) => [
         ...old,
-        ...optimisticFiles,
+        ...Array.from(files).map((file) => ({
+          id: `temp-${file.name}`, 
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          isUploading: true,
+        })),
       ]);
 
       const res = await axios.post("http://localhost:8800/upload", formData, {
@@ -192,7 +194,7 @@ function Sidebar({ currentFolder, className = "" }) {
         ...res.data.uploaded,
       ]);
 
-      toast.success("Files uploaded successfully");
+      toast.success("Files uploaded successfully", { id: toastId });
     } catch (err) {
       toast.error("Upload failed");
       queryClient.setQueryData(["files", folderId], (old = []) =>
@@ -254,7 +256,7 @@ function Sidebar({ currentFolder, className = "" }) {
                       className="flex gap-2 cursor-pointer"
                     >
                       <img src="/file.png" alt="" className="w-4 h-4" />
-                      Upload Files 
+                      Upload Files
                     </div>
                     <input
                       type="file"
@@ -279,7 +281,7 @@ function Sidebar({ currentFolder, className = "" }) {
                       className="flex gap-2 cursor-pointer"
                     >
                       <img src="/file.png" alt="" className="w-4 h-4" />
-                      Upload Files 
+                      Upload Files
                     </div>
                     <input
                       type="file"

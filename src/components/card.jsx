@@ -10,6 +10,15 @@ function Card({ title, description, imageUrl, file, mode }) {
   const inputRef = useRef(null);
   const wrapperRef = useRef(null);
 
+  if (file.isUploading) {
+    return (
+      <div className="w-40 h-32 border rounded-md flex flex-col items-center justify-center bg-gray-100 shadow-sm">
+        <div className="loading loading-spinner text-primary"></div>
+        <p className="text-sm text-gray-500 mt-2">Uploading...</p>
+      </div>
+    );
+  }
+
   const handleRenameInline = async () => {
     if (!fileName || fileName.trim() === "") return;
 
@@ -56,7 +65,7 @@ function Card({ title, description, imageUrl, file, mode }) {
         onDoubleClick={openPreview}
       >
         <div className="card-body bg-white relative">
-          <div className="p-4 mb-2 rounded-lg h-64 w-64">
+          <div className="p-4 mb-2 brightness-50 rounded-lg h-64 w-62">
             <FilePreview file={file} />
 
             {editing ? (
@@ -80,7 +89,7 @@ function Card({ title, description, imageUrl, file, mode }) {
               </div>
             ) : (
               <h3
-                className="mt-2 text-sm font-semibold truncate cursor-pointer"
+                className="mt-2 text-sm text-center font-semibold truncate cursor-pointer"
                 onClick={startEditing}
               >
                 {fileName}
@@ -123,8 +132,8 @@ function Card({ title, description, imageUrl, file, mode }) {
               <button className="btn">Close</button>
             </form>
           </div>
-          <div className="w-[100%] h-[100%] border mb-4 rounded-lg p-2 flex items-center justify-center">
-            <FilePreview file={file} className="" />
+          <div className="w-[100%] h-[100%]  border mb-4 rounded-lg p-2 flex items-center justify-center">
+            <FilePreview file={file} />
           </div>
         </div>
       </dialog>

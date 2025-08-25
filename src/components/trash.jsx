@@ -88,18 +88,20 @@ function Trash() {
           {folders.length === 0 ? (
             <p className="text-gray-500 text-center">No folders in trash</p>
           ) : (
-            <ul className="space-y-3">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {folders.map((folder) => (
                 <li
                   key={folder.id}
-                  className="flex gap-2 mt-2 bg-gray-100 rounded-lg w-50 py-2 px-2  shadow-sm"
+                  className="flex items-center justify-between bg-gray-100 rounded-lg p-3 shadow-sm"
                 >
-                  <img src="/open-folder.png" alt="" className="w-6 h-6" />
-                  <span className="font-medium">{folder.name}</span>
+                  <div className="flex items-center gap-2">
+                    <img src="/open-folder.png" alt="" className="w-6 h-6" />
+                    <span className="font-medium truncate">{folder.name}</span>
+                  </div>
 
-                  <div className="relative ml-17 mt-1" ref={dropdownRef}>
+                  <div className="relative" ref={dropdownRef}>
                     <button
-                      className=" rounded-full hover:bg-gray-200"
+                      className="rounded-full hover:bg-gray-200 p-1"
                       onClick={() =>
                         setOpenDropdownId(
                           openDropdownId === folder.id ? null : folder.id
@@ -109,7 +111,7 @@ function Trash() {
                       <img
                         src="/dotsCard.png"
                         alt="options"
-                        className="w-6 h-6"
+                        className="w-5 h-5"
                       />
                     </button>
                     {openDropdownId === folder.id && (
@@ -134,7 +136,7 @@ function Trash() {
           {files.length === 0 ? (
             <p className="text-gray-500 text-center">No files in trash</p>
           ) : (
-            <div className="grid grid-cols-4 gap-12 mt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {files.map((file) => (
                 <Card
                   key={file.id}
